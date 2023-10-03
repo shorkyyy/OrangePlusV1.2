@@ -19,10 +19,9 @@
 
 ## 🌟 Features
 
-- 📊 Track and categorize your expenses.
-- 💰 Set spending limits for different categories.
-- 📈 Visualize your spending habits with charts and graphs.
-- 📤 Export your spending data for analysis.
+- 📊 Track and manage your expenses.
+- 💰 Set spending limits for your expenses.
+- 📈 Visualize your spending habits with charts.
 - 🔔 Customizable budgeting and notification settings.
 
 ## 🛠 Installation
@@ -104,4 +103,4 @@ For more details on contributing, please read our [📜 contribution guidelines]
 
 ## 📜 License
 
-This project is licensed under the Shorky License. See the [LICENSE](LICENSE) file 📄 for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 📄 for details.
