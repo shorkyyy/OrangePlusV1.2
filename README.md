@@ -106,4 +106,3 @@ For more details on contributing, please read our [📜 contribution guidelines]
 ## 📜 License
 
 This project is licensed under the Shorky License. See the [LICENSE](LICENSE) file 📄 for details.
-```
