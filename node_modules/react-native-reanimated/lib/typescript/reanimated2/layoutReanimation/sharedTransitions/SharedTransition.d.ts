@@ -1,0 +1,28 @@
+import type { SharedTransitionAnimationsValues, CustomProgressAnimation } from '../animationBuilder/commonTypes';
+import { SharedTransitionType } from '../animationBuilder/commonTypes';
+import type { StyleProps } from '../../commonTypes';
+type AnimationFactory = (values: SharedTransitionAnimationsValues) => StyleProps;
+export declare class SharedTransition {
+    private _customAnimationFactory;
+    private _animation;
+    private _transitionDuration;
+    private _customProgressAnimation?;
+    private _progressAnimation?;
+    private _defaultTransitionType?;
+    private static _progressTransitionManager;
+    custom(customAnimationFactory: AnimationFactory): SharedTransition;
+    progressAnimation(progressAnimationCallback: CustomProgressAnimation): SharedTransition;
+    duration(duration: number): SharedTransition;
+    defaultTransitionType(transitionType: SharedTransitionType): SharedTransition;
+    registerTransition(viewTag: number, sharedTransitionTag: string): void;
+    unregisterTransition(viewTag: number): void;
+    private getTransitionAnimation;
+    private getProgressAnimation;
+    private buildAnimation;
+    private buildProgressAnimation;
+    static custom(customAnimationFactory: AnimationFactory): SharedTransition;
+    static duration(duration: number): SharedTransition;
+    static progressAnimation(progressAnimationCallback: CustomProgressAnimation): SharedTransition;
+    static defaultTransitionType(transitionType: SharedTransitionType): SharedTransition;
+}
+export {};

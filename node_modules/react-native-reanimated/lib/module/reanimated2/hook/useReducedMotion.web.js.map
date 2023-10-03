@@ -1,0 +1,1 @@
+{"version":3,"names":["useReducedMotion","window","matchMedia","matches"],"sources":["useReducedMotion.web.ts"],"sourcesContent":["export function useReducedMotion() {\n  return !window.matchMedia('(prefers-reduced-motion: no-preference)').matches;\n}\n"],"mappings":"AAAA,OAAO,SAASA,gBAAgBA,CAAA,EAAG;EACjC,OAAO,CAACC,MAAM,CAACC,UAAU,CAAC,yCAAyC,CAAC,CAACC,OAAO;AAC9E"}

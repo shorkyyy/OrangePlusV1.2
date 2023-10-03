@@ -1,0 +1,1 @@
+{"version":3,"names":["useReducedMotion","global","_REANIMATED_IS_REDUCED_MOTION"],"sources":["useReducedMotion.ts"],"sourcesContent":["export function useReducedMotion() {\n  return global._REANIMATED_IS_REDUCED_MOTION ?? false;\n}\n"],"mappings":"AAAA,OAAO,SAASA,gBAAgBA,CAAA,EAAG;EACjC,OAAOC,MAAM,CAACC,6BAA6B,IAAI,KAAK;AACtD"}
