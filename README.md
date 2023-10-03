@@ -1,13 +1,12 @@
-<<<<<<< HEAD
-<h1 align="center">🍊 Orange Plus/Orange⁺ 🍊</h1>
+<h1 align="center">🍊 Orange⁺ 🍊</h1>
 
 <p align="center">
-  <a href="https://github.com/shorkyyy/OrangePlus/blob/main/LICENSE"><img src="https://img.shields.io/github/license/shorkyyy/OrangePlus" alt="License"></a>
-  <a href="https://github.com/shorkyyy/OrangePlus/issues"><img src="https://img.shields.io/github/issues/shorkyyy/OrangePlus" alt="Issues"></a>
-  <a href="https://github.com/shorkyyy/OrangePlus/stargazers"><img src="https://img.shields.io/github/stars/shorkyyy/OrangePlus" alt="Stars"></a>
+  <a href="https://github.com/shorkyyy/OrangePlusV1.2/blob/main/LICENSE"><img src="https://img.shields.io/github/license/shorkyyy/OrangePlusV1.2" alt="License"></a>
+  <a href="https://github.com/shorkyyy/OrangePlusV1.2/issues"><img src="https://img.shields.io/github/issues/shorkyyy/OrangePlusV1.2" alt="Issues"></a>
+  <a href="https://github.com/shorkyyy/OrangePlusV1.2/stargazers"><img src="https://img.shields.io/github/stars/shorkyyy/OrangePlusV1.2" alt="Stars"></a>
 </p>
 
-**Orange Plus/Orange⁺** is a spending tracking app 📱 built with React Native that helps you manage 💼 your spending effectively.
+**Orange⁺** is a spending tracking app 📱 built with React Native that helps you manage 💼 your spending effectively.
 
 ## 📌 Table of Contents
 
@@ -28,12 +27,12 @@
 
 ## 🛠 Installation
 
-To use **Orange Plus/Orange⁺**, follow these steps:
+To use **Orange⁺**, follow these steps:
 
 1. 🍴 Fork and clone the repository:
 
    ```bash
-   git clone https://github.com/shorkyyy/OrangePlus.git
+   git clone https://github.com/shorkyyy/OrangePlusV1.2.git
    ```
 
 2. 📂 Navigate to the project directory:
@@ -72,13 +71,13 @@ For more detailed usage instructions, refer to the [📘 user guide](docs/user-g
 
 ## 🤝 Contributing
 
-🎉 We welcome contributions from the community! To contribute to **Orange Plus/Orange⁺**, follow these steps:
+🎉 We welcome contributions from the community! To contribute to **Orange⁺**, follow these steps:
 
 1. 🍴 Fork the repository.
 2. 🛠 Clone your fork:
 
    ```bash
-   git clone https://github.com/YourUsername/OrangePlus.git
+   git clone https://github.com/shorkyyy/OrangePlusV1.2.git
    ```
 
 3. 🌿 Create a new branch:
