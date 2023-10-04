@@ -40,13 +40,13 @@ const BudgetInputModal = ({ isVisible, onClose, onSubmit, onCancel }) => {
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Icon name="paw" size={40} color="#8FCB8F" style={styles.budgetIcon} />
-          <Text style={styles.modalTitle}>Nhập chi tiêu mới</Text>
+          <Text style={styles.modalTitle}>Nhập hạn mức mới</Text>
           <View style={styles.inputContainer}>
             <TextInput
-              placeholder="Chi tiêu mới"
+              placeholder="Hạn mức mới"
               keyboardType="numeric"
               style={styles.input}
-              value={formattedBudget} // Display the formatted budget
+              value={formattedBudget}
               onChangeText={handleBudgetChange}
             />
             <Text style={styles.currencySymbol}>đ</Text>
