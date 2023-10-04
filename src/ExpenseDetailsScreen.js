@@ -60,12 +60,12 @@ const ExpenseDetailsScreen = ({ route, navigation }) => {
       <View style={styles.detailsContainer}>
         <View style={styles.detailsRow}>
           <FontAwesome5 name="money-bill-wave" size={20} color="#8FCB8F" style={styles.detailsIcon} />
-          <Text style={styles.detailsLabel}>Số Tiền:</Text>
+          <Text style={styles.detailsLabel}>Số tiền:</Text>
           <Text style={styles.detailsValue}>{formatAmount(expense.amount)}</Text>
         </View>
         <View style={styles.detailsRow}>
           <FontAwesome5 name="calendar" size={20} color="#8FCB8F" style={styles.detailsIcon} />
-          <Text style={[styles.detailsLabel]}>Ngày:</Text>
+          <Text style={[styles.detailsLabel]}>Vào ngày:</Text>
           <Text style={[styles.detailsValue]}>{formatDate(expense.date)}</Text>
         </View>
       </View>
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F3F4F6',
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 5,
   },
   iconContainer: {
     width: 70,

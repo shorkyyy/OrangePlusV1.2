@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Animated,UIManager } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, UIManager, LayoutAnimation, Platform } from 'react-native';
 import { FAB } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome5'; // Change 'FontAwesome5' to the desired icon set
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import BudgetInputModal from './BudgetInputModal';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Haptics from 'expo-haptics';
@@ -16,12 +17,26 @@ setTimeout(() => {
   SplashScreen.hideAsync();
 }, 1500);
 
+
 const MainScreen = ({ route, navigation }) => {
   const [currentMonth, setCurrentMonth] = useState(getCurrentMonth());
   const [expensesData, setExpensesData] = useState([...dummyExpensesData]);
   const totalAmountByMonth = calculateTotalAmountByMonth(currentMonth);
   UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+  const [showBudgetModal, setShowBudgetModal] = useState(false); // State variable to control the visibility of the budget input modal
+  const [budgetThreshold, setBudgetThreshold] = useState(4000000);
   
+  const customAnimationConfig = {
+    duration: 200, 
+    create: {
+      type: LayoutAnimation.Types.linear,
+      property: LayoutAnimation.Properties.opacity,
+    },
+    update: {
+      type: LayoutAnimation.Types.easeInEaseOut,
+    },
+  };
+
   const fabAnimation = new Animated.Value(0);
 
   const [expenseToDelete, setExpenseToDelete] = useState(null); // Add state variable to track the expense to delete
@@ -34,6 +49,9 @@ const MainScreen = ({ route, navigation }) => {
   
   const [expandedDates, setExpandedDates] = useState([]);
   const [sortedExpenses, setSortedExpenses] = useState([...dummyExpensesData]); // State variable to hold sorted expenses
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollThreshold = 70; // Adjust the threshold value as needed
+  const opacityAnimation = useRef(new Animated.Value(1)).current; // 1 is the initial opacity
 
 
   const iconMap = {
@@ -76,7 +94,15 @@ const MainScreen = ({ route, navigation }) => {
     }
     return totalAmountByMonth;
   }
+  const handleOpenBudgetModal = () => {
+    setShowBudgetModal(true);
+  };
 
+  // Function to handle updating the budget threshold
+  const handleUpdateBudget = (newBudget) => {
+    AsyncStorage.setItem('budgetThreshold', String(newBudget));
+    setBudgetThreshold(newBudget);
+  };
    // Function to get the current month in 'YYYY-MM' format
    function getCurrentMonth() {
     const currentDate = new Date();
@@ -87,6 +113,7 @@ const MainScreen = ({ route, navigation }) => {
 
   // Function to handle switching to the previous month
   function handlePreviousMonth() {
+    LayoutAnimation.configureNext(customAnimationConfig);
     const prevDate = new Date(currentMonth);
     prevDate.setMonth(prevDate.getMonth() - 1);
     const prevMonth = prevDate.toISOString().substring(0, 7);
@@ -95,15 +122,11 @@ const MainScreen = ({ route, navigation }) => {
 
   // Function to handle switching to the next month
   function handleNextMonth() {
+    LayoutAnimation.configureNext(customAnimationConfig);
     const nextDate = new Date(currentMonth);
     nextDate.setMonth(nextDate.getMonth() + 1);
     const nextMonth = nextDate.toISOString().substring(0, 7);
     setCurrentMonth(nextMonth);
-  }
-  // Function to check if an expense date is today
-  function isExpenseDateToday(expenseDate) {
-    const currentDate = getCurrentDate();
-    return expenseDate === currentDate;
   }
 
   // Function to format the amount with "." as a thousand separator and add "đ" for VND
@@ -194,7 +217,7 @@ const MainScreen = ({ route, navigation }) => {
         <View style={styles.emptyEasterEggContainer}>
           <Icon name="paw" size={20} color="#ccc" />
           <Text style={styles.emptyTextEasterEgg}>Made by Orange with love</Text>
-          <Text style={styles.emptyTextEasterEggVersion}>version 1.2.1</Text>
+          <Text style={styles.emptyTextEasterEggVersion}>version 1.3.0</Text>
         </View>
       )}
       </>
@@ -295,6 +318,12 @@ const MainScreen = ({ route, navigation }) => {
             const uniqueDates = Array.from(new Set([...prevExpandedDates, ...allExpenseDates]));
             return uniqueDates;
           });
+          const budgetThresholdString = await AsyncStorage.getItem('budgetThreshold');
+          if (budgetThresholdString) {
+            // Parse the loaded string as an integer and set it as the budgetThreshold
+            const loadedBudgetThreshold = parseInt(budgetThresholdString);
+            setBudgetThreshold(loadedBudgetThreshold);
+          }
         }
 
         // Check if the modal flag is set
@@ -303,7 +332,6 @@ const MainScreen = ({ route, navigation }) => {
         // If the modal has not been shown before, set the flag to true and show the modal
         if (!modalShown) {
           await AsyncStorage.setItem('modalShown', 'true');
-          setShowModal(true);
         }
       } catch (error) {
         console.error('Error loading expenses data:', error);
@@ -320,13 +348,31 @@ const MainScreen = ({ route, navigation }) => {
   }, [expenseId]);
 
   useEffect(() => {
-    // Check if the total amount exceeds the budget and the notification has not been shown yet
-    const totalAmount = calculateTotalAmount(expensesData);
-    if (totalAmount >= 4000000 && !notificationShown) {
-      schedulePushNotification();
-      setNotificationShown(true);
-    }
+    const checkAndScheduleNotification = async () => {
+      try {
+        const budgetThresholdString = await AsyncStorage.getItem('budgetThreshold');
+
+        // If there's a value in AsyncStorage, use it; otherwise, use the default value
+        const loadedBudgetThreshold = budgetThresholdString
+          ? parseInt(budgetThresholdString)
+          : 4000000; // Use the default value if there's no value in AsyncStorage
+        
+        setBudgetThreshold(loadedBudgetThreshold); // Update the budgetThreshold state
+        
+        const totalAmount = calculateTotalAmount(expensesData);
+        if (totalAmount >= loadedBudgetThreshold && !notificationShown) {
+          schedulePushNotification();
+          setNotificationShown(true);
+        }
+      } catch (error) {
+        console.error('Error checking and scheduling notification:', error);
+      }
+    };
+  
+    // Call the function to check and schedule the notification
+    checkAndScheduleNotification();
   }, [expensesData, notificationShown]);
+  
 
   useEffect(() => {
     filterAndSortExpenses();
@@ -389,59 +435,55 @@ const MainScreen = ({ route, navigation }) => {
     });
   };
   // Function to send a notification when the total amount exceeds 4,000,000 VND
-async function schedulePushNotification() {
-  const customIconUri = '/Users/huyphan/spendingManage/assets/adaptive-icon.png';
-  // Define the threshold for triggering the notification
-  const notificationThreshold = 4000000;
-
-  // Calculate the total expenses for the current month
-  const currentMonthExpenses = expensesData.filter((expense) => {
-    const expenseMonth = expense.date.substring(0, 7);
-    return expenseMonth === currentMonth;
-  });
-
-  const totalAmountForCurrentMonth = calculateTotalAmount(currentMonthExpenses);
-
-  // Check if the total amount for the current month exceeds the threshold
-  if (totalAmountForCurrentMonth >= notificationThreshold) {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Vượt Quá Chi Tiêu Tháng 🚨",
-        body: 'Bạn đã sử dụng vượt chi tiêu tháng này!',
-        icon: customIconUri,
-      },
-      trigger: null, 
-      ios: {
-        sound: true, // Enable sound for iOS notifications
-        _displayInForeground: true, // Show notification when the app is in the foreground (iOS 15+)
-      },
-      android: {
-        channelId: 'default', // Required for Android notifications
-        sound: true, // Enable sound for Android notifications
-        priority: Notifications.AndroidNotificationPriority.HIGH, // Set notification priority (optional)
-        vibrate: [0, 250, 250, 250], // Set vibration pattern (optional)
-        color: '#FF231F7C', // Set notification color (optional)
+  async function schedulePushNotification() {
+    const customIconUri = '/Users/huyphan/spendingManage/assets/adaptive-icon.png';
+    // Define the threshold for triggering the notification
+    const notificationThreshold = budgetThreshold; // Update this line
+  
+    // Calculate the total expenses for the current month
+    const currentMonthExpenses = expensesData.filter((expense) => {
+      const expenseMonth = expense.date.substring(0, 7);
+      return expenseMonth === currentMonth;
+    });
+  
+    const totalAmountForCurrentMonth = calculateTotalAmount(currentMonthExpenses);
+  
+    // Check if the total amount for the current month exceeds the threshold
+    if (totalAmountForCurrentMonth >= notificationThreshold) {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Vượt Quá Chi Tiêu Tháng 🚨",
+          body: 'Bạn đã sử dụng vượt chi tiêu tháng này!',
+          icon: customIconUri,
+        },
+        trigger: null, 
+        ios: {
+          sound: true, // Enable sound for iOS notifications
+          _displayInForeground: true, // Show notification when the app is in the foreground (iOS 15+)
+        },
+        android: {
+          channelId: 'default', // Required for Android notifications
+          sound: true, // Enable sound for Android notifications
+          priority: Notifications.AndroidNotificationPriority.HIGH, // Set notification priority (optional)
+          vibrate: [0, 250, 250, 250], // Set vibration pattern (optional)
+          color: '#FF231F7C', // Set notification color (optional)
         },
       });
-   }
+    }
   }
+  
 
   const handleDeleteExpense = async (expenseId) => {
     try {
-      // Remove the expense with the given ID from the expensesData array
       const updatedExpenses = expensesData.filter((expense) => expense.id !== expenseId);
-
-      // Update the sorted expenses array (no need to sort it again)
       setSortedExpenses(updatedExpenses);
 
-      // Save the updated expenses to local storage
       await AsyncStorage.setItem('expensesData', JSON.stringify(updatedExpenses));
 
-      // Update the expensesData state
       setExpensesData(updatedExpenses);
 
-      // Close the delete confirmation modal
       setShowDeleteModal(false);
+      LayoutAnimation.configureNext(customAnimationConfig);
     } catch (error) {
       console.error('Error deleting expense:', error);
     }
@@ -469,7 +511,7 @@ async function schedulePushNotification() {
       currentMonth
     );
 
-    const totalBudget = 4000000;
+    const totalBudget = budgetThreshold;
     const segmentWidths = {};
     for (const description of sortedDescriptions) {
       const totalAmountSpentForDescription = totalAmountByDescription[description];
@@ -506,48 +548,84 @@ async function schedulePushNotification() {
                   ? formatAmount(calculateTotalAmount(expenses))
                   : 'N/A'}
               </Text>
-              <View style={styles.progressBar}>
-                {sortedDescriptions.map((description) => (
-                  <View
-                    key={description}
-                    style={{
-                      left: `${segmentPositions[description]}%`,
-                      width: `${segmentWidths[description]}%`,
-                      backgroundColor: colorMap[description] || '#ccc',
-                      height: '100%',
-                      position: 'absolute',
-                    }}
-                  />
-                ))}
-              </View>
-              <View style={styles.dotContainer}>
-                <View style={styles.dotItemsWrapper}>
-                  {sortedDescriptionOrder.map((description) => (
-                    <View key={description} style={styles.dotItem}>
-                      <View
-                        style={[styles.dot, { backgroundColor: colorMap[description] || '#ccc' }]}
-                      />
-                      <Icon name={iconMap[description]} style={styles.dotIcon} />
-                    </View>
-                  ))}
+              <TouchableOpacity onPress={handleOpenBudgetModal}>
+              <View style={styles.totalBudgetContainer}>
+                <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={styles.totalBudgeText}t>
+                    / {formatAmount(budgetThreshold)}
+                  </Text> 
+                  <View style={styles.totalBudgetIcon} >
+                    <Icon name="pen" size={10} color="#fff"/>
+                  </View>
                 </View>
               </View>
+              </TouchableOpacity>
+              {!isScrolling && (
+                <View style={styles.progressBar}>
+                  {sortedDescriptions.map((description) => (
+                    <View
+                      key={description}
+                      style={{
+                        left: `${segmentPositions[description]}%`,
+                        width: `${segmentWidths[description]}%`,
+                        backgroundColor: colorMap[description] || '#ccc',
+                        height: '100%',
+                        position: 'absolute',
+                      }}
+                    />
+                  ))}
+                </View>
+              )}
+              {!isScrolling && (
+                <View style={styles.dotContainer}>
+                  <View style={styles.dotItemsWrapper}>
+                    {sortedDescriptionOrder.map((description) => (
+                      <View key={description} style={styles.dotItem}>
+                        <View
+                          style={[styles.dot, { backgroundColor: colorMap[description] || '#ccc' }]}
+                        />
+                        <Icon name={iconMap[description]} style={styles.dotIcon} />
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+
           </View>
           ))}
         </View>
         {hasExpensesData() ? (
+          <View style={styles.expenseItemContainer}>
             <FlashList
-               data={filteredExpenses}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-                showsVerticalScrollIndicator={false}
-                estimatedItemSize={868}
+              data={filteredExpenses}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              estimatedItemSize={868}
+              onScroll={(event) => {
+                LayoutAnimation.configureNext(customAnimationConfig);
+                const yOffset = event.nativeEvent.contentOffset.y;
+                if (yOffset > scrollThreshold) {
+                  Animated.timing(opacityAnimation, {
+                    toValue: 0,
+                    duration: 250, // you can adjust the timing
+                    useNativeDriver: true, // for better performance
+                  }).start(() => setIsScrolling(true));
+                } else {
+                  Animated.timing(opacityAnimation, {
+                    toValue: 1,
+                    duration: 250,
+                    useNativeDriver: true,
+                  }).start(() => setIsScrolling(false));
+                }
+              }}
             />
-
+          </View>
         ) : (
           <View style={styles.emptyContainer}>
             <Icon name="piggy-bank" size={60} color="#ccc" />
             <Text style={styles.emptyText}>Chi tiêu trống</Text>
+            {/* <Text style={styles.emptyText1}>cho tháng này!</Text> */}
           </View>
         )}
         {/* Render the delete confirmation modal */}
@@ -556,6 +634,12 @@ async function schedulePushNotification() {
           expense={expenseToDelete}
           onCancel={handleCancelDelete}
           onDelete={handleDeleteExpense}
+        />
+         <BudgetInputModal
+        isVisible={showBudgetModal}
+        onClose={() => setShowBudgetModal(false)}
+        onSubmit={handleUpdateBudget}
+        onCancel={() => setShowBudgetModal(false)} 
         />
           <Animated.View
             style={[
@@ -595,7 +679,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F3F4F6',
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 5,
   },
   navigationContainer: {
     flexDirection: 'row',
@@ -609,6 +693,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFF', // Change the color to whiteđ
     marginVertical: 5,
+
   },
   navigationMonth: {
     fontSize: 18,
@@ -619,9 +704,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#8FCB8F',
     paddingVertical: 16,
     borderRadius: 20,
-    marginBottom: 20,
   },
-  
   summaryItem: {
     flexDirection: 'column', // Change to 'column' instead of 'row'
     justifyContent: 'center',
@@ -635,6 +718,27 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     overflow: 'hidden',
     marginBottom: 10,
+    marginTop: 5,
+  },
+  totalBudgetContainer: {
+    // width: '90%',
+    backgroundColor: 'rgba(242, 242, 242, 0.4)', // 50% opacity
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 10,
+   
+  },
+  totalBudgeText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: 10,
+    color: '#fff',
+  },
+  totalBudgetIcon:{
+  
   },
   totalAmount: {
     fontSize: 40,
@@ -642,10 +746,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     alignItems: 'center',
     marginTop: 10,
-    marginBottom: 15,
+    // marginBottom: 15,
+  },
+  expenseItemContainer:{
+    flex: 1,
+    marginTop: 10,
   },
   expenseItem: {
-    backgroundColor: '#ffffff', 
+    backgroundColor: '#fff', 
     padding: 16,
     marginBottom: 5,
   },
@@ -673,12 +781,14 @@ const styles = StyleSheet.create({
   },
   expenseTitle: {
     fontSize: 18,
-    color: '#000',
+    color: '#8FCB8F',
+    fontWeight: 'bold',
   },
   expenseDescription: {
     fontSize: 14,
     color: '#999',
     marginTop: 2,
+    fontWeight: 'bold',
   },
   expenseDate: {
     fontSize: 14,
@@ -690,7 +800,6 @@ const styles = StyleSheet.create({
     color: '#FF6B6B',
   },
   dateHeader: {
-    // marginStart: 18,
     marginTop: 18,
     marginBottom: 5,
     flexDirection: 'row',
@@ -729,16 +838,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyEasterEggContainer:{
-    marginTop: 70,
+    marginTop: 40,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#ccc',
-    marginTop: 20,
+    marginTop: 10,
+  },
+  emptyText1: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ccc',
   },
   emptyTextEasterEgg: {
     fontSize: 12,
@@ -760,8 +874,8 @@ const styles = StyleSheet.create({
   dotItemsWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Adjust the justifyContent to control spacing between dots
-    width: '85%', // Set a fixed width for the dotItemsWrapper to control overall container width
+    justifyContent: 'space-between', 
+    width: '80%', 
   },
   dotItem: {
     flexDirection: 'row',
@@ -771,7 +885,7 @@ const styles = StyleSheet.create({
     width: 9,
     height: 9,
     borderRadius: 5,
-    marginRight: 10, // Add a small margin to create space between the dot and icon
+    marginRight: 10,
   },
   dotIcon: {
     fontSize: 15,
@@ -790,21 +904,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#999',
     marginLeft: 'auto', // Align to the right
-    // marginEnd: 18,
   },  
-  searchBarContainer: {
-    
-  },
-  toggleSearchButton: {
-    marginTop: 5,
-    paddingHorizontal: 5,
-    borderRadius: 8,
-  },
-  toggleSearchButtonText: {
-    textAlign: 'center',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
 });
 
 export default MainScreen;

@@ -68,7 +68,7 @@ const AddExpenseScreen = ({ navigation }) => {
       errorMessage = 'Ngày không hợp lệ.';
     }
   
-    // Check if the amount is valid (greater than 0)
+    // Check if the amount is valid (greater than 500)
     if (!errorMessage && parseFloat(formattedAmount.replace(/\./g, '')) < 500) {
       errorMessage = 'Số tiền phải lớn hơn 500đ.';
     }
@@ -180,7 +180,7 @@ const AddExpenseScreen = ({ navigation }) => {
           style={styles.input}
           value={title}
           onChangeText={setTitle}
-          placeholder="Tên Chi Tiêu"
+          placeholder="Tên chi tiêu"
           placeholderTextColor="#aaa"
         />
         {title !== '' && (
@@ -217,7 +217,7 @@ const AddExpenseScreen = ({ navigation }) => {
             style={styles.amountInput}
             value={amount}
             onChangeText={formatAmountInput}
-            placeholder="Số Tiền"
+            placeholder="Số tiền"
             placeholderTextColor="#aaa"
             keyboardType="numeric"
           />
@@ -235,7 +235,7 @@ const AddExpenseScreen = ({ navigation }) => {
           style={[styles.input, { flex: 1 }]}
           value={date}
           onChangeText={setDate}
-          placeholder="Vào Ngày (YYYY-MM-DD)"
+          placeholder="Vào ngày (YYYY-MM-DD)"
           placeholderTextColor="#aaa"
           editable={isDateEditable} // Set the editable property based on the state
         />
@@ -256,7 +256,7 @@ const AddExpenseScreen = ({ navigation }) => {
       />
       <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
       < FontAwesome5 name="plus-circle" size={18} color="#fff" style={styles.buttonIcon} />
-        <Text style={styles.addButtonText}>Thêm Mới</Text>
+        <Text style={styles.addButtonText}>Thêm mới</Text>
       </TouchableOpacity>
     </View>
     </TouchableWithoutFeedback>
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F3F4F6',
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 5,
   },
   title: {
     fontSize: 20,

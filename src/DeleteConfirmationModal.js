@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   cancelButton: {
+    width: 80,
     backgroundColor: '#ccc',
     paddingVertical: 8,
     paddingHorizontal: 20,
@@ -69,8 +70,10 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   deleteButton: {
+    width: 80,
     backgroundColor: '#FF6A63',
     paddingVertical: 8,
     paddingHorizontal: 20,
@@ -79,6 +82,7 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   trashIcon: {
     marginBottom: 20,

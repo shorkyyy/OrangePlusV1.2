@@ -63,7 +63,7 @@ const EditExpenseScreen = ({ route, navigation }) => {
   
     // Check if the amount is valid (greater than 0)
     if (!errorMessage && parseFloat(amountWithoutFormat) < 500) {
-      errorMessage = 'Số tiền phải lớn hơn 500.';
+      errorMessage = 'Số tiền phải lớn hơn 500đ.';
     }
   
     if (errorMessage) {
@@ -109,13 +109,13 @@ const EditExpenseScreen = ({ route, navigation }) => {
       <View style={styles.detailsContainer}>
         <View style={styles.detailsRow}>
         <FontAwesome5 name="money-bill-wave" size={20} color="#8FCB8F" style={styles.detailsIcon} />
-          <Text style={styles.detailsLabel}>Số Tiền:</Text>
+          <Text style={styles.detailsLabel}>Số tiền:</Text>
           <View style={styles.currencyContainer}>
             <TextInput
               style={styles.detailsValue}
               value={amount}
               onChangeText={formatAmountInput} // Use the custom function to update amount changes
-              placeholder="Số Tiền Đã Chi"
+              placeholder="Số tiền đã chi"
               keyboardType="numeric"
             />
           </View>
@@ -123,12 +123,12 @@ const EditExpenseScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.detailsRow}>
         <FontAwesome5 name="calendar" size={20} color="#8FCB8F" style={styles.detailsIcon} />
-          <Text style={[styles.detailsLabel, styles.detailsLabelText]}>Ngày:</Text>
+          <Text style={[styles.detailsLabel, styles.detailsLabelText]}>Vào ngày:</Text>
           <TextInput
             style={[styles.detailsValue, styles.detailsValueText]}
             value={date}
             onChangeText={setEditDate}
-            placeholder="Vào Ngày (YYYY-MM-DD)"
+            placeholder="Vào ngày (YYYY-MM-DD)"
           />
         </View>
       </View>
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F3F4F6',
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 5,
   },
   iconContainer: {
     width: 70,

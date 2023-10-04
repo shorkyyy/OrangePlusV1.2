@@ -12,7 +12,10 @@
       "backgroundColor": "#F3F4F6"
     },
     "notification":{
-      "icon":"./assets/icon.png"
+      "icon":"./assets/icon.png",
+      "color": "#8FCB8F",
+      "iosDisplayInForeground": true,
+      "androidMode": "default"
    },
     "assetBundlePatterns": [
       "**/*"

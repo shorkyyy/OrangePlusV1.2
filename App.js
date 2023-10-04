@@ -12,13 +12,6 @@ import * as Notifications from 'expo-notifications';
 
 const Stack = createStackNavigator();
 
-const screenTitles = {
-  MainScreen: 'Tổng Chi Tiêu',
-  AddExpenseScreen: 'Thêm Mới',
-  ExpenseDetailsScreen: 'Thông Tin',
-  EditExpenseScreen: 'Chỉnh Sửa',
-};
-
 export default function App() {
   const [fontsLoaded] = useFonts({
     'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
@@ -77,10 +70,10 @@ export default function App() {
             headerTintColor: '#000', // Set the color of the back button icon and title
           }}
         >
-          <Stack.Screen name="MainScreen" component={MainScreen} options={{ title: 'Tổng Quan' }} />
-          <Stack.Screen name="AddExpenseScreen" component={AddExpenseScreen} options={{ title: 'Thêm Mới' }} />
-          <Stack.Screen name="ExpenseDetailsScreen" component={ExpenseDetailsScreen} options={{ title: 'Thông Tin' }} />
-          <Stack.Screen name="EditExpenseScreen" component={EditExpenseScreen} options={{ title: 'Chỉnh Sửa' }} />
+          <Stack.Screen name="MainScreen" component={MainScreen} options={{ title: 'Tổng quan' }} />
+          <Stack.Screen name="AddExpenseScreen" component={AddExpenseScreen} options={{ title: 'Thêm mới' }} />
+          <Stack.Screen name="ExpenseDetailsScreen" component={ExpenseDetailsScreen} options={{ title: 'Chi tiết' }} />
+          <Stack.Screen name="EditExpenseScreen" component={EditExpenseScreen} options={{ title: 'Chỉnh sửa' }} />
         </Stack.Navigator>
         <StatusBar style="Dark" androidNavigationBarStyle="light-content" />
       </NavigationContainer>

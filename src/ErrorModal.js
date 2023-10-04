@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   okButton: {
+    width: 80,
     backgroundColor: '#FF6A63',
     paddingVertical: 8,
     paddingHorizontal: 20,
@@ -57,6 +58,7 @@ const styles = StyleSheet.create({
   okButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   errorIcon: {
     marginBottom: 20,
