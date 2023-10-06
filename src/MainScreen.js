@@ -50,7 +50,7 @@ const MainScreen = ({ route, navigation }) => {
   const [expandedDates, setExpandedDates] = useState([]);
   const [sortedExpenses, setSortedExpenses] = useState([...dummyExpensesData]); // State variable to hold sorted expenses
   const [isScrolling, setIsScrolling] = useState(false);
-  const scrollThreshold = 70; // Adjust the threshold value as needed
+  const scrollThreshold = 20; // Adjust the threshold value as needed
   const opacityAnimation = useRef(new Animated.Value(1)).current; // 1 is the initial opacity
 
 
@@ -602,21 +602,14 @@ const MainScreen = ({ route, navigation }) => {
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
               estimatedItemSize={868}
-              onScroll={(event) => {
-                LayoutAnimation.configureNext(customAnimationConfig);
+              onMomentumScrollEnd={(event) => {
                 const yOffset = event.nativeEvent.contentOffset.y;
                 if (yOffset > scrollThreshold) {
-                  Animated.timing(opacityAnimation, {
-                    toValue: 0,
-                    duration: 250, // you can adjust the timing
-                    useNativeDriver: true, // for better performance
-                  }).start(() => setIsScrolling(true));
+                  setIsScrolling(true);
+                  LayoutAnimation.configureNext(customAnimationConfig);
                 } else {
-                  Animated.timing(opacityAnimation, {
-                    toValue: 1,
-                    duration: 250,
-                    useNativeDriver: true,
-                  }).start(() => setIsScrolling(false));
+                  setIsScrolling(false);
+                  LayoutAnimation.configureNext(customAnimationConfig);
                 }
               }}
             />
@@ -725,7 +718,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(242, 242, 242, 0.4)', // 50% opacity
     borderRadius: 20,
     paddingHorizontal: 10,
-    paddingVertical: 2,
+    paddingVertical: 5,
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 10,

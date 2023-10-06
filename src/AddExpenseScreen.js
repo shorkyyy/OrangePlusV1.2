@@ -70,7 +70,9 @@ const AddExpenseScreen = ({ navigation }) => {
   
     // Check if the amount is valid (greater than 500)
     if (!errorMessage && parseFloat(formattedAmount.replace(/\./g, '')) < 500) {
-      errorMessage = 'Số tiền phải lớn hơn 500đ.';
+      errorMessage = 'Số tiền phải lớn hơn 500 đồng.';
+    } else {
+      errorMessage = 'Số tiền không được vượt quá 1 tỷ đồng.';
     }
   
     if (errorMessage) {

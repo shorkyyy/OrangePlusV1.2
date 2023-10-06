@@ -13,9 +13,9 @@ const DeleteConfirmationModal = ({ isVisible, expense, onCancel, onDelete }) => 
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Icon name="trash" size={40} color="#FF6A63" style={styles.trashIcon} />
-          <Text style={styles.modalTitle}>Xác nhận xóa</Text>
+          <Text style={styles.modalTitle}>Xóa</Text>
           <Text style={styles.modalMessage}>
-            Bạn có chắc xóa khoản chi tiêu này?
+            Bạn có chắc chắn muốn xóa khoản chi tiêu này?
           </Text>
           <View style={styles.modalButtonsContainer}>
             <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>

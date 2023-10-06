@@ -26,9 +26,9 @@ const BudgetInputModal = ({ isVisible, onClose, onSubmit, onCancel }) => {
     if (newBudget.trim() === '') {
       alert('Vui lòng nhập một giá trị chi tiêu hợp lệ.');
     } else if (parsedBudget < 500) {
-      alert('Chi tiêu phải nhỏ hơn 500đ.');
+      alert('Hạn mức chi tiêu phải lớn hơn hơn 500 đồng.');
     } else if (parsedBudget >= 1000000000) {
-      alert('Chi tiêu không được vượt quá 1 tỷ đ.');
+      alert('Hạn mức  chi tiêu không được vượt quá 1 tỷ đồng.');
     } else {
       onSubmit(parsedBudget);
       onClose();
@@ -40,10 +40,10 @@ const BudgetInputModal = ({ isVisible, onClose, onSubmit, onCancel }) => {
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Icon name="paw" size={40} color="#8FCB8F" style={styles.budgetIcon} />
-          <Text style={styles.modalTitle}>Nhập hạn mức mới</Text>
+          <Text style={styles.modalTitle}>Hạn mức chi tiêu</Text>
           <View style={styles.inputContainer}>
             <TextInput
-              placeholder="Hạn mức mới"
+              placeholder="Nhập hạn mức chi tiêu"
               keyboardType="numeric"
               style={styles.input}
               value={formattedBudget}
